@@ -1,2 +1,1 @@
-# shell
-same shell scripts
+some shell scripts
