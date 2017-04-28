@@ -40,4 +40,3 @@ done
 
 #backup the files and compress archive
 tar -czf $DESTINATIOPN $FILE_LIST 2> /dev/null
-
