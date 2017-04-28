@@ -18,5 +18,4 @@ do
 	sed '{11,$D; =}' |
 	sed 'N; s/\n/ /' |
 	awk '{printf $1 ":" "\t" $2 "\t" $3 "\n"}'
-done                                       
-
+done
