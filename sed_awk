@@ -1,0 +1,82 @@
+#!/bin/bash
+sed命令：
+
+命令格式：
+sed options script file
+
+命令选项：
+-e script   #将script中指定的命令添加到处理输入时运行的命令中
+-f file     #将file文件中指定的命令添加到处理输入时运行的命令中
+-n          不要为每条命令产生输出，但会等待打印命令
+
+sed命令：
+1.替换
+s/pattern/replacement/flags
+    flags:
+        一个数字：表明该模式出现的第几处应该被替换
+        g：替换全局
+        p：原来行中内容打印
+        w file：替换的结果应该写入文件file中
+2.寻址
+两种方式：
+    行的数字范围
+    过滤出一行的文本模式
+sed '2,3s/dog/cat/' file
+sed '/rich/s/bash/csh/' /etc/passwd
+sed '2{s/fox/elephant/ s/dog/cat/} file
+
+3.删除行
+sed '3d' file
+sed ‘2,3d' file
+sed '/number 1/d' file
+
+4.插入和附加文本
+    插入命令（insert, i）在指定行前加一行
+    附加命令（append, a）在指定行后加一行
+sed 'iline'
+sed 'aline'
+
+5.修改行
+sed '3cline'
+
+6.转换命令
+[addresss]y/inchars/outchars/
+
+7.打印行
+sed -n '/number 3/p' file
+
+8.写入到文件
+sed '1,2w test' file
+
+9.从文件中读取
+sed '3r data' file
+
+
+awk命令：
+
+格式：
+awk options program file
+
+选项：
+-F fs 
+-f file
+-v var=value
+-mf N
+-mr N
+-W keyword
+
+使用：
+1.从命令行上读取程序脚本
+awk '{print $1}'
+
+2.在程序脚本中使用多个命令
+awk '{$4="dave"; print $0}'
+
+3.从文本中读取程序
+awk -F: -f script /etc/passwd
+
+4.在处理数据前运行脚本
+awk 'BEGIN {print "this is a test"}'
+
+5.在处理数据后运行脚本
+awk 'BEGIN {print "hello"} {print $0} END{print "bye"}'
