@@ -1,0 +1,110 @@
+1.bash内建命令
+alias   指定命令别名
+bg      后台模式恢复作业的运行
+bind    将键盘序列绑定到一个readline函数或宏
+break   退出for、while、select、util循环
+builtin 执行指定的shell内建命令
+cd
+caller  但会所有活动子函数调用的上下文
+command 执行指定的命令，而不用通常的shell查找
+compgen 为指定单词生成可能的补全匹配
+complete
+continue
+declare 声明一个变量或者变量类型
+dirs    显示当前存储目录的列表
+disown
+echo
+enable
+eval
+exec    用指定命令替换shell进程
+exit
+export  设置指定变量使其对子shell进程可用
+fc
+fg
+getopts
+hash    查找并记住指定命令的全路径名
+help
+history
+jobs
+kill
+let     计算一个数学表达式的每个参数
+local
+logout
+popd
+printf
+pushd
+pwd
+read
+readonly
+return
+set     设置并显示环境变量的值和shell特性
+shift   将位置是参数依次向下降一个位置
+shopt
+suspend
+test
+times
+trap    如果收到指定的系统信号，执行指定的命令
+type    显示指定的单词，如果作为命令将会如何被解释
+ulimit  替系统用户给指定的资源设置一个上限
+umask   为新建的文件和目录设置默认权限
+unalias 
+unset
+wait    等待指定的进程完成，并返回退出状态
+
+2.bash命令（外部命令）
+bzip2   
+cat
+chage   修改指定系统用户账户的密码过期日期
+chnf    修改指定账户的备注信息
+chgrp
+chmod
+chown
+chpassed
+chsh
+compress原始的unix文件压缩工具
+cp
+date
+df
+du
+file
+find
+finger
+free    查看系统上可用的和已用的内存
+grep
+groupadd
+groupmod
+gzip
+head
+killall
+less
+link
+ls
+mkdir
+more
+mount
+mv
+nice
+passwd
+ps
+pwd
+renice
+rm
+rmdir
+sort
+stat    显示指定文件的文件统计数据
+sudo
+tail
+tar
+touch
+top
+umount
+uptime
+useradd
+userdel
+usermod 修改已有系统用户账户
+vmstat  生成一个详尽的系统上内存和CPU使用情况报告
+which
+zip
+
+3.bash shell环境变量
+
