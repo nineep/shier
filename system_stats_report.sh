@@ -1,8 +1,9 @@
 #!/bin/bash
-# 1.run time
-# 2.disk usage
-# 3.memory usage
-# 4.zombie process
+#                  内核四项主要功能   
+# 1.run time       文件系统/硬件设备管理
+# 2.disk usage     硬件设备管理
+# 3.memory usage   系统内存管理
+# 4.zombie process 软件程序管理
 
 #set variables
 DATE=`date +%m%d%Y`
