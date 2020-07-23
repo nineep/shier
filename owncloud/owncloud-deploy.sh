@@ -26,7 +26,7 @@ setsebool -P httpd_unified 1
 setsebool -P httpd_execmem 1
 
 # Config owncloud
-cat > /etc/httpd/conf/httpd.conf << EOF
+cat >> /etc/httpd/conf/httpd.conf << EOF
 # owncloud config
 PHPIniDir /etc/php.ini
 

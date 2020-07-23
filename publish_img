@@ -1,0 +1,47 @@
+#!/bin/bash
+
+logDir='/var/log/converge'
+mkdir -p $logDir
+DATE=$( date '+%Y-%m-%d' )
+
+{
+echo -e "\n\n\n************  $0 $@  ************"
+date '+%Y-%m-%d %H:%M:%S'
+
+[ "$1" ] && [ "$2" ] && [ "$3" ] || { echo "USAGE: $0 IMAGE_FILE_PATH IMAGE_NAME POOL" ; exit 0; }
+[ -f "$1" ] && [ -f "$2" ] && [ -f "$3" ] || { echo "ERROR: $@ not exists !" ; exit 1; }
+
+set -x
+
+FILE_PATH=$1
+IMAGE_NAME=$2
+POOL=$3
+
+function convert_image(){
+   echo -e '\nConverting image from qcow2 to raw...'
+   rm -f ${FILE_PATH/%\.qcow2/\.raw}
+   qemu-img convert -p -f qcow2 -O raw $FILE_PATH  ${FILE_PATH/%\.qcow2/\.raw}
+   echo -e 'Done.\n'
+}
+
+
+function upload_image(){
+   echo -e "\nUploading '$IMAGE_NAME'..."
+   
+   # create a image in ceph
+   rbd --pool=$POOL import  ${FILE_PATH/%\.qcow2/\.raw}  --image=$IMAGE_NAME --new-format --order 22 || { echo 'Error: rbd import failed !' ; exit 1; }
+   rbd --pool=$POOL --image=$IMAGE_NAME --snap=snap snap create
+   rbd --pool=$POOL --image=$IMAGE_NAME --snap=snap snap protect
+
+   echo -e  'Done.\n'
+}
+
+####### main ##########
+FSID=`ceph -s | grep id | awk '{print $2}'` || { echo 'Error: cehp -s failed !' ; exit 1; }
+echo "FSID: ${FSID}"
+
+convert_image
+
+upload_image
+
+} 2>&1 | tee -a $logDir/publish_img-$DATE

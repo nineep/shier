@@ -8,10 +8,10 @@ yum install -y vsftpd
 systemctl start vsftpd
 
 # Disable anonymous access
-sed -i s/anonymous_enable=YES/anonymous_enable=NO/g vsftpd.conf
+sed -i s/anonymous_enable=YES/anonymous_enable=NO/g /etc/vsftpd/vsftpd.conf
 
 # Config vsftpd user
-cat > /etc/vsftpd/vsftpd.conf << EOF
+cat >> /etc/vsftpd/vsftpd.conf << EOF
 # Enable user list /etc/vsftpd/user_list
 userlist_deny=NO
 # Lock the user into his or her own directory

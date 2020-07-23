@@ -1,0 +1,6 @@
+#!/bin/bash
+set -x
+cat /etc/hosts | grep 127.0.0.1 | grep `hostname`
+if [ $? -ne 0 ];then
+    sed -i  "s/127.0.0.1.*/& `hostname`/g" /etc/hosts
+fi
