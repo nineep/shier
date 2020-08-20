@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# 默认master非worker，taint去污
+kubectl taint nodes <node-name> node-role.kubernetes.io/master:NoSchedule-
+
+# 重置节点
+kubeadm reset
+
+# 删除iptables规则
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+

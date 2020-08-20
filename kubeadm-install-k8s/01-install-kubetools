@@ -1,0 +1,64 @@
+#!/bin/bash
+# 概述:
+# 1、control-plane安装插件包kubeadm、kubectl、kubelet(作为worker节点的话)，在worker节点安装kubelet。
+# 2、kubeadm init control-plane节点。
+# 3、在control-plane节点执行安装pod network(插件可选)，会在所有节点安装network、proxy。 (也可以rpm包形式安装network插件)
+# 4、将kubeam init 返回的 kubeadm join 命令在每个worker执行
+# 	例如:kubeadm join 10.0.0.5:6443 --token ow1cqc.jorhwrgdxz3xkqwf \
+#    --discovery-token-ca-cert-hash sha256:cd4357eabba347684c3c42e3e119d2e013d8b92aed9d231ff00aa5a7de54badb
+
+# Ensure iptables tooling does not use the nftables backend
+update-alternatives --set iptables /usr/sbin/iptables-legacy
+
+# 安装CRI
+yum install docker -y
+systemctl enable --now docker
+
+# 安装kube*
+
+#cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+#[kubernetes]
+#name=Kubernetes
+#baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+#enabled=1
+#gpgcheck=1
+#repo_gpgcheck=1
+#gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+#EOF
+
+# Set SELinux in permissive mode (effectively disabling it)
+setenforce 0
+sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+# Resolve traffic being routed incorrectly due to iptables being bypassed
+cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sysctl --system
+
+# Load br_netfilter module
+modprobe br_netfilter
+
+# 使用阿里云的源
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
+
+# 由于官网未开放同步方式, 可能会有索引gpg检查失败的情况, 这时请用 yum install -y --nogpgcheck kubelet kubeadm kubectl 安装
+yum install -y --nogpgcheck kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+# 禁止SWAP，否则kubelet启动失败
+# 目前没有配置文件，需要执行kubuadm之后生成，
+# 报错failed to load Kubelet config file /var/lib/kubelet/config.yaml
+systemctl enable --now kubelet
+
+# 开启ip转发
+echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+sysctl -p

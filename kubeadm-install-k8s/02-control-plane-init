@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# 初始化control-plane
+kubeadm init \
+--apiserver-advertise-address 192.168.56.149 \
+--control-plane-endpoint=cluster-endpoint \
+--pod-network-cidr=10.244.0.0/16  \
+--image-repository gcr.azk8s.cn/google-containers \
+--v=3
+## --apiserver-advertise-address
+# 可选项，指定控制面板API server地址
+
+## --control-plane-endpoint
+# 可选项，若想扩展至多节点控制面板，需要一个统一入口，故此项需配置
+# IP 或者 域名， 域名可指向LB
+
+## --pod-network-cidr
+# 必选项，根据所使用的CNI确定
+
+## --image-repository
+# k8s.gcr.io换成国内源 anjia0532.gcr.io, https://github.com/anjia0532/gcr.io_mirror
+# 对等关系：k8s.gcr.io/{image}/{tag} <==> gcr.io/google-containers/{image}/{tag} <==> anjia0532/google-containers.{image}/{tag}
+# 或者使用Azure 中国区站点：gcr.azk8s.cn/google-containers 
+# 或者 registry.cn-hangzhou.aliyuncs.com/google_containers
+
+# root用户初始化配置文件
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+# bash 自动补全
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+# add non-root user for k8s cluster
+USERNAME=k8s
+useradd $USERNAME
+echo "$USERNAME  ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+su $USERNAME -c "sudo mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config; sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+su $USERNAME -c 'echo "source <(kubectl completion bash)" >> $HOME/.bashrc; echo "export KUBECONFIG=$HOME/.kube/config" >> $HOME/.bashrc'
+

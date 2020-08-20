@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#更换docker image 源
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://h2upzkdj.mirror.aliyuncs.com"]
+}
+EOF
+
+# Install network addon
+# 镜像pull使用azure cn的源
+#USERNAME=root
+#su $USERNAME << EOF
+#sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+#EOF
+# flannel: need --pod-network-cidr=10.244.0.0/16 when kubeadm init
+#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+# canal: need --pod-network-cidr=10.244.0.0/16 when kubeadm init
+kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/canal.yaml
+
+# Network installed successfully, CoreDNS pod will running
