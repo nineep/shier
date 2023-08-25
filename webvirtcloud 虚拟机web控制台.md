@@ -7,7 +7,8 @@
 ### 修改配置文件
 
 <img width="650" alt="image" src="https://github.com/nineep/shier/assets/20335786/4a565933-5a3e-4bb9-982f-7674d427d71d">
-
+Dockerfile修改后，build镜像  
+docker build   -f Dockerfile -t nineep/webvirtcloud:v1.0 .  
 
 
 ### docker 部署
@@ -18,7 +19,7 @@ docker run -d --name webvirtcloud -p 80:80 -p 6080:6080 nineep/webvirtcloud-dock
 
 ### web
 
-[http://virtcloud.ksord.com:8090/](http://virtcloud.ksord.com:8090/)
+[http://virtcloud.test.com/](http://virtcloud.test.com/)
 
 admin
 
