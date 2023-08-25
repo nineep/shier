@@ -1,0 +1,105 @@
+---
+#理解
+changed_when
+failed_when
+become
+become_user
+ansible_become
+ansible_become_user
+static
+
+
+#检查group_vars中某组是否存在主机
+- name: ensure only one monitoring host exists
+  fail: msg="One, or no monitoring host may be specified."
+  when: "groups.get('monitoring_servers', [])|length > 1"
+
+#如果不定义值，那么使用默认值
+- name: set deploy dir if not presented
+  set_fact: deploy_dir="/home/{{deploy_user}}/deploy"
+  when: deploy_dir is not defined
+
+#禁掉swap
+- name: disable swap
+  shell: "([ $(swapon -s | wc -l) -ge 1 ] && (swapoff -a && echo disable)) || echo already"
+  ignore_errors: yes
+  register: swapoff_result
+  changed_when: "swapoff_result.stdout.strip() == 'disable'"
+
+#当set_timezone定义，设置相应时区
+- name: set timezone to {{timezone}}
+  timezone: name={{ timezone }}
+  when: set_timezone
+
+#设置hostname
+- name: set hostname by ip
+  hostname: name=ip-{{ ansible_default_ipv4.address | replace(".","-") }}
+  register: hostname_set
+  when:
+    - set_hostname
+    - "ansible_default_ipv4.address | replace('.','-') not in ansible_hostname"
+
+#设置/etc/hosts
+- name: inject hostname to hosts file
+  lineinfile: dest=/etc/hosts line='127.0.0.1  ip-{{ ansible_default_ipv4.address | replace(\".\",\"-\") }}'
+  when: set_hostname
+
+'#修改文件中匹配到的某行
+- name：modify centos irqbalance configuration file
+  lineinfile:
+    dest=/etc/default/irqbalance
+    regexp='(?<!_)ONESHOT='
+    line='ONESHOT=yes'
+  when:
+    - tuning_irqbalance_value
+    - centos_irq_config_file.stat.exists
+
+#检查umask
+- name: get umask
+  shell: umask
+  register: umask
+  changed_when: False
+
+- name: does the system have a standard umask
+  fail: 'The umask of the system ({{ umask.stdout.strip() }}) prevents successful installation. We suggest a standard umask such as 0022.'
+  when: umask.stdout.strip()[-2:] not in ('00', '02', '20', '22')
+
+#根据facts值，检查系统版本
+- name: check system version
+  fail:
+    msg: "Red Hat Enterprise Linux/CentOS 6 is deprecated"
+  when: "ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6"
+
+#检查文件挂载点
+- name: detemine which mountpoint depoly dir exists on
+  shell: "df {{ deploy_dir }} | tail -n1 | awk '{print $NF}'"
+  register: deploy_partition
+  changed_when: False
+
+#抓取log
+- name: fetch pd log file
+  fetch:
+    src: "{{ log_dir }}/{{ inventory_hostname }}-pd.tar.gz"
+    dest: "{{ fetch_tmp_dir }}/{{ inventory_hostname }}/"
+    flat: yes
+    validate_checksum: no
+  when: "'pd_servers' in group_names"
+
+#下载tidb二进制
+- name: download tidb binary
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ doenloads_dir }}/{{ item.name }}-{{ item.version }}.tar.gz"
+    checksum: "{{ item.checksum | default(omit) }}"
+    force: yes
+    validate_certs: no
+  register: get_url_result
+  until: "'OK' in get_url_result.msg or 'file already exists' in get_url_result.msg"
+  retries: 4
+  delay: "{{ retry_stagger | random + 3 }}"
+  with_items: "{{ tidb_packages }}"
+  when: has_outband_network
+
+#debug
+- debug:
+    msg: "run command on server: {{ disk_randread_iops.cmd }}"

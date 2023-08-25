@@ -1,0 +1,45 @@
+---
+- hosts: webservers
+  roles:
+    - { role: foo, message: "first" }
+    - { role: foo, message: "second" }
+
+# playbook.yml
+---
+ - hosts: webservers
+   roles:
+    - foo
+    - foo
+# roles/foo/meta/main.yml
+---
+   allow_duplicates: true
+
+
+
+#ansible 内容复用：
+includes:
+imports:
+roles:
+dynamic vs static
+import*(import_playbook, import_tasks) --- static
+include*(include)tasks, include_role) --- dynamic
+bare include is considered deprecated
+
+#ansible magic 变量
+hostvars  # 访问其他主机变量
+group_names
+groups
+
+inventory_hostname
+inventory_hostname_short
+ansible_play_hosts
+ansible_play_batch
+ansible_playbook_python
+
+inventory_dir
+inventory_file
+palybook_dir
+role_path
+
+ansible_check_mode
+
