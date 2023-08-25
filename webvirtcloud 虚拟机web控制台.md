@@ -6,9 +6,10 @@
 
 ### 修改配置文件
 
-<img width="650" alt="image" src="https://github.com/nineep/shier/assets/20335786/4a565933-5a3e-4bb9-982f-7674d427d71d">
-Dockerfile修改后，build镜像  
-docker build   -f Dockerfile -t nineep/webvirtcloud:v1.0 .  
+<img width="650" alt="image" src="https://github.com/nineep/shier/assets/20335786/4a565933-5a3e-4bb9-982f-7674d427d71d">  
+
+Dockerfile修改后，build镜像    
+docker build   -f Dockerfile -t nineep/webvirtcloud:v1.0 .    
 
 
 ### docker 部署
@@ -26,6 +27,8 @@ admin
 ruBsj5DBm2ryj24
 
 
+### 宿主安装kvm  
+https://raw.githubusercontent.com/retspen/webvirtcloud/master/dev/libvirt-bootstrap.sh  
 
 ### ssh连接宿主
 
