@@ -6,7 +6,7 @@
 
 ### 修改配置文件
 
-![](/Users/wps/Library/Application%20Support/marktext/images/2023-08-25-13-45-31-image.png)
+<img width="650" alt="image" src="https://github.com/nineep/shier/assets/20335786/4a565933-5a3e-4bb9-982f-7674d427d71d">
 
 
 
